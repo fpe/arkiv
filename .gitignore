@@ -1,0 +1,11 @@
+.ds_store
+
+/target
+/temp_dir
+/temp
+
+.env
+!.env.example
+.idea
+.vscode
+*.sq3*
