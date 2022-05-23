@@ -1,5 +1,24 @@
+# config docs are available in the boardarchiver/src/config.rs file
 boards:
-  lgbt: {}
+  lgbt:
+    filters:
+      - (hrt|hrtgen)
+      - \w*gen
+      - /\w*/
+    reverse_filter: true
+  g:
+    filters:
+      - desktop
+      - (mkg|mechanical keyboard)
+      - rust
+      - (self.*host|server.*home|home.*server|host.*home|home.*host)
+      - (m1|apple|mac)
+      - language
+      - linux
+    reverse_filter: true
+  mu:
+    filters:
+      - k(-?| ?)pop
+      - (rap|hip ?hop)
+      - prod
   int: {}
-  g: {}
-  mu: {}

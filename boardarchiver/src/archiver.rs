@@ -1,4 +1,7 @@
-use crate::{config::Config, storage};
+use crate::{
+    config::{Config, CustomRegex},
+    storage,
+};
 use bytes::Bytes;
 use fourchan::{BoardsResponse, Post, PostAttachment, ThreadResponse};
 use futures::Future;
@@ -51,7 +54,7 @@ where
                     page.page,
                     &board_name
                 );
-                for thread_entry in page.threads {
+                'page_loop: for thread_entry in page.threads {
                     debug!("archiving thread no {}", thread_entry.no);
 
                     let time_started = SystemTime::now();
@@ -62,6 +65,27 @@ where
                         .await?
                     {
                         ThreadResponse::Thread(thread) => {
+                            if let Some(post) = thread.posts.get(0) {
+                                let mut filter_match = false;
+                                for CustomRegex(filter) in &board_cfg.filters {
+                                    if let Some(sub) = &post.sub {
+                                        if filter.is_match(sub) {
+                                            filter_match = true;
+                                            break;
+                                        }
+                                    }
+                                    if let Some(com) = &post.com {
+                                        if filter.is_match(com) {
+                                            filter_match = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if filter_match ^ board_cfg.reverse_filter {
+                                    continue 'page_loop;
+                                }
+                            }
+
                             for post in thread.posts {
                                 debug!("archiving post no {}", post.no);
                                 self.save_post(&post, &board.board).await?;
