@@ -76,19 +76,21 @@ where
                                             break;
                                         }
                                     }
-                                    if let Some(com) = &post.com {
-                                        let com_text = Html::parse_document(com).tree.nodes().fold(
-                                            String::new(),
-                                            |mut s, n| {
-                                                if let Node::Text(t) = n.value() {
-                                                    s.push_str(t);
-                                                }
-                                                s
-                                            },
-                                        );
-                                        if filter.is_match(&com_text) {
-                                            filter_match = true;
-                                            break;
+                                    if board_cfg.filter_comment {
+                                        if let Some(com) = &post.com {
+                                            let com_text = Html::parse_document(com)
+                                                .tree
+                                                .nodes()
+                                                .fold(String::new(), |mut s, n| {
+                                                    if let Node::Text(t) = n.value() {
+                                                        s.push_str(t);
+                                                    }
+                                                    s
+                                                });
+                                            if filter.is_match(&com_text) {
+                                                filter_match = true;
+                                                break;
+                                            }
                                         }
                                     }
                                 }

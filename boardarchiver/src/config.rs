@@ -28,6 +28,10 @@ fn reverse_filter_default() -> bool {
     false
 }
 
+fn filter_comment_default() -> bool {
+    true
+}
+
 #[derive(Debug, Clone)]
 pub struct CustomRegex(pub Regex);
 impl<'de> serde::Deserialize<'de> for CustomRegex {
@@ -63,4 +67,10 @@ pub struct BoardConfig {
     /// Default: `false`
     #[serde(default = "reverse_filter_default")]
     pub reverse_filter: bool,
+
+    /// Include thread comment when filtering
+    ///
+    /// Default: `true`
+    #[serde(default = "filter_comment_default")]
+    pub filter_comment: bool,
 }
