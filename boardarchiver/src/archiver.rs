@@ -5,6 +5,7 @@ use crate::{
 use bytes::Bytes;
 use fourchan::{BoardsResponse, Post, PostAttachment, ThreadResponse};
 use futures::Future;
+use scraper::{Html, Node};
 use std::time::{Duration, SystemTime};
 use tracing::{debug, info, trace, trace_span, warn};
 
@@ -76,7 +77,16 @@ where
                                         }
                                     }
                                     if let Some(com) = &post.com {
-                                        if filter.is_match(com) {
+                                        let com_text = Html::parse_document(com).tree.nodes().fold(
+                                            String::new(),
+                                            |mut s, n| {
+                                                if let Node::Text(t) = n.value() {
+                                                    s.push_str(t);
+                                                }
+                                                s
+                                            },
+                                        );
+                                        if filter.is_match(&com_text) {
                                             filter_match = true;
                                             break;
                                         }
