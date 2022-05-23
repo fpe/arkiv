@@ -6,7 +6,7 @@ use bytes::Bytes;
 use fourchan::{BoardsResponse, Post, PostAttachment, ThreadResponse};
 use futures::Future;
 use std::time::{Duration, SystemTime};
-use tracing::{debug, info};
+use tracing::{debug, info, trace, trace_span, warn};
 
 pub struct Archiver<S: storage::Storage> {
     client: fourchan::Client,
@@ -66,6 +66,7 @@ where
                     {
                         ThreadResponse::Thread(thread) => {
                             if let Some(post) = thread.posts.get(0) {
+                                let _span_guard = trace_span!("filter").entered();
                                 let mut filter_match = false;
                                 for CustomRegex(filter) in &board_cfg.filters {
                                     if let Some(sub) = &post.sub {
@@ -82,8 +83,10 @@ where
                                     }
                                 }
                                 if filter_match ^ board_cfg.reverse_filter {
+                                    trace!(?post, "skipping thread");
                                     continue 'page_loop;
                                 }
+                                trace!(?post, "saving thread");
                             }
 
                             for post in thread.posts {
@@ -114,7 +117,7 @@ where
                             );
                         }
                         ThreadResponse::NotFound => {
-                            debug!(
+                            warn!(
                                 "thread no {} on /{}/ could not be found",
                                 thread_entry.no, &board.board
                             );
