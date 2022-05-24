@@ -10,7 +10,7 @@ use crate::{
     thread::{ThreadPageListResponse, ThreadResponse, ThreadResponseInner},
 };
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Client {
     http_client: reqwest::Client,
     cache: Arc<RwLock<HashMap<i64, DateTime<Utc>>>>,

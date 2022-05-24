@@ -6,14 +6,20 @@ use bytes::Bytes;
 use fourchan::{BoardsResponse, Post, PostAttachment, ThreadResponse};
 use futures::Future;
 use scraper::{Html, Node};
-use std::time::{Duration, SystemTime};
+use std::{
+    sync::Arc,
+    time::{Duration, SystemTime},
+};
+use tokio::sync::Semaphore;
 use tracing::{debug, info, trace, trace_span, warn};
 
+#[derive(Clone)]
 pub struct Archiver<S: storage::Storage> {
     client: fourchan::Client,
     pool: sqlx::SqlitePool,
     storage: S,
     config: Config,
+    semaphore: Arc<Semaphore>,
 }
 
 impl<S> Archiver<S>
@@ -27,6 +33,7 @@ where
             pool,
             storage,
             config,
+            semaphore: Arc::new(Semaphore::new(4)),
         }
     }
 
@@ -102,18 +109,26 @@ where
                             }
 
                             for post in thread.posts {
-                                debug!("archiving post no {}", post.no);
-                                self.save_post(&post, &board.board).await?;
+                                let permit = Arc::clone(&self.semaphore).acquire_owned().await?;
+                                let archiver = self.clone();
+                                let board = board.clone();
+                                tokio::spawn(async move {
+                                    debug!("archiving post no {}", post.no);
+                                    archiver.save_post(&post, &board.board).await?;
 
-                                if let Some(attachment) = post.attachment() {
-                                    if board_cfg.full_media {
-                                        self.save_attachment(&board.board, &attachment).await?;
+                                    if let Some(attachment) = post.attachment() {
+                                        if board_cfg.full_media {
+                                            archiver
+                                                .save_attachment(&board.board, &attachment)
+                                                .await?;
+                                        }
+                                        archiver.save_thumbnail(&board.board, &attachment).await?;
                                     }
-                                    self.save_thumbnail(&board.board, &attachment).await?;
-                                }
-                                debug!("archived post no {}", &post.no);
+                                    debug!("archived post no {}", &post.no);
 
-                                tokio::time::sleep(Duration::from_millis(100)).await;
+                                    drop(permit);
+                                    anyhow::Ok(())
+                                });
                             }
 
                             let elapsed = time_started.elapsed()?.as_secs_f64();
@@ -137,6 +152,7 @@ where
                     }
                 }
             }
+            tokio::time::sleep(Duration::from_secs(60 * 10)).await;
         }
 
         Ok(())
