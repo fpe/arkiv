@@ -152,6 +152,7 @@ where
                     }
                 }
             }
+            debug!("waiting 10 minutes until next archival");
             tokio::time::sleep(Duration::from_secs(60 * 10)).await;
         }
 
