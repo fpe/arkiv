@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use tokio::io::AsyncWriteExt;
 use tracing::{debug, debug_span};
 
-use crate::storage::{split_path, Storage};
+use crate::{split_path, Storage};
 
 #[allow(clippy::module_name_repetitions)]
 #[derive(Debug, Clone)]

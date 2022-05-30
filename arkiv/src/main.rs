@@ -5,18 +5,15 @@
 use anyhow::Context;
 use archiver::Archiver;
 use config::Config;
-use storage::local::LocalStorage;
+use arkiv_storage::local::LocalStorage;
 
 #[macro_use]
 extern crate serde;
 #[macro_use]
 extern crate sqlx;
-#[macro_use]
-extern crate async_trait;
 
 pub mod archiver;
 pub mod config;
-pub mod storage;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

@@ -1,2 +1,2 @@
 [workspace]
-members = ["fourchan", "arkiv"]
+members = ["fourchan", "arkiv", "arkiv_storage"]

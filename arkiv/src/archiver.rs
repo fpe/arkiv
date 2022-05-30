@@ -1,7 +1,4 @@
-use crate::{
-    config::{Config, CustomRegex},
-    storage,
-};
+use crate::config::{Config, CustomRegex};
 use bytes::Bytes;
 use fourchan::{BoardsResponse, Post, PostAttachment, ThreadResponse};
 use futures::Future;
@@ -14,7 +11,7 @@ use tokio::sync::Semaphore;
 use tracing::{debug, info, trace, trace_span, warn};
 
 #[derive(Clone)]
-pub struct Archiver<S: storage::Storage> {
+pub struct Archiver<S: arkiv_storage::Storage> {
     client: fourchan::Client,
     pool: sqlx::SqlitePool,
     storage: S,
@@ -24,7 +21,7 @@ pub struct Archiver<S: storage::Storage> {
 
 impl<S> Archiver<S>
 where
-    S: storage::Storage,
+    S: arkiv_storage::Storage,
 {
     pub fn new(pool: sqlx::SqlitePool, storage: S, config: Config) -> Self {
         let client = fourchan::Client::new();

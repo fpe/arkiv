@@ -2,6 +2,9 @@ pub mod local;
 
 use std::path::PathBuf;
 
+#[macro_use]
+extern crate async_trait;
+
 #[async_trait]
 pub trait Storage
 where

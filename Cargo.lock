@@ -42,7 +42,7 @@ name = "arkiv"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "async-trait",
+ "arkiv_storage",
  "bytes",
  "chrono",
  "dotenv",
@@ -59,6 +59,16 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "arkiv_storage"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
