@@ -73,39 +73,41 @@ where
                         .await?
                     {
                         ThreadResponse::Thread(thread) => {
-                            if let Some(post) = thread.posts.get(0) {
-                                let _span_guard = trace_span!("filter").entered();
-                                let mut filter_match = false;
-                                for CustomRegex(filter) in &board_cfg.filters {
-                                    if let Some(sub) = &post.sub {
-                                        if filter.is_match(sub) {
-                                            filter_match = true;
-                                            break;
-                                        }
-                                    }
-                                    if board_cfg.filter_comment {
-                                        if let Some(com) = &post.com {
-                                            let com_text = Html::parse_document(com)
-                                                .tree
-                                                .nodes()
-                                                .fold(String::new(), |mut s, n| {
-                                                    if let Node::Text(t) = n.value() {
-                                                        s.push_str(t);
-                                                    }
-                                                    s
-                                                });
-                                            if filter.is_match(&com_text) {
+                            if !board_cfg.filters.is_empty() {
+                                if let Some(post) = thread.posts.get(0) {
+                                    let _span_guard = trace_span!("filter").entered();
+                                    let mut filter_match = false;
+                                    for CustomRegex(filter) in &board_cfg.filters {
+                                        if let Some(sub) = &post.sub {
+                                            if filter.is_match(sub) {
                                                 filter_match = true;
                                                 break;
                                             }
                                         }
+                                        if board_cfg.filter_comment {
+                                            if let Some(com) = &post.com {
+                                                let com_text = Html::parse_document(com)
+                                                    .tree
+                                                    .nodes()
+                                                    .fold(String::new(), |mut s, n| {
+                                                        if let Node::Text(t) = n.value() {
+                                                            s.push_str(t);
+                                                        }
+                                                        s
+                                                    });
+                                                if filter.is_match(&com_text) {
+                                                    filter_match = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
                                     }
+                                    if filter_match ^ board_cfg.reverse_filter {
+                                        trace!(?post, "skipping thread");
+                                        continue 'page_loop;
+                                    }
+                                    trace!(?post, "saving thread");
                                 }
-                                if filter_match ^ board_cfg.reverse_filter {
-                                    trace!(?post, "skipping thread");
-                                    continue 'page_loop;
-                                }
-                                trace!(?post, "saving thread");
                             }
 
                             for post in thread.posts {
