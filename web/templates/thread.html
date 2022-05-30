@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul class="list">
+    {% for post in posts %}
+    <div class="post" id="p{{post.no}}">
+        {% if post.tim %}
+        <a class="post__thumbnail" href="/cdn/{{board}}/{{post.tim}}{{post.ext}}" target="_blank">
+            <img src="/cdn/{{board}}/{{post.tim}}s.jpg" />
+        </a>
+        {% endif %}
+        <div class="post__content">
+            <p>
+                <b>{{post.sub}}</b> 
+                {{post.com | html_decode | safe}}
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+</ul>
+{% endblock content %}

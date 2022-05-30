@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul class="list">
+    {% for thread in threads %}
+    <div class="post">
+        <div class="post__thumbnail">
+            <img src="/cdn/{{board}}/{{thread.tim}}s.jpg" />
+        </div>
+        <div class="post__content">
+            <a href="/{{board}}/thread/{{thread.no}}">{{thread.no}}</a>
+            <p>
+                <b>{{thread.sub}}</b> 
+                {{thread.com | html_decode | safe}}
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+    <a href="?before={{first_thread}}">Previous</a>
+    <a href="?after={{last_thread}}">Next</a>
+</ul>
+{% endblock content %}

@@ -1,0 +1,25 @@
+[package]
+name = "web"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+fourchan = { path = "../fourchan", version = "0.1.0"}
+arkiv_storage = { path = "../arkiv_storage", version = "0.1.0"}
+tokio = { version = "1", features = ["rt", "macros"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing = "0.1"
+sqlx = { version = "0.5", features = ["runtime-tokio-rustls", "sqlite", "chrono"] }
+serde = { version = "1", features = ["derive"] }
+anyhow = "*"
+async-trait = "0.1"
+dotenv = "0.15.0"
+chrono = { version = "0.4.19", features = ["serde"] }
+http = "0.2.7"
+axum = "0.5.6"
+tera = "1.15.0"
+mime_guess = "2.0.4"
+html-escape = "0.2.11"
+tower-http = { version = "0.3.3", features = ["fs", "trace"] }

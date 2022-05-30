@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %}</title>
+</head>
+<style>
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html {
+    font-family: monospace;
+}
+body {
+    background-color: #000;
+    color: #fff;
+}
+main {
+    width: 100%;
+    max-width: 48rem;
+    margin: 2rem auto;
+}
+.post {
+    display: flex;
+    padding: .2rem;
+}
+.post:nth-child(odd) {
+    background-color: #1a1a1a;
+}
+.post + .post {
+    margin-top: .1rem;
+}
+a {
+    color: mediumslateblue;
+}
+.post__thumbnail {
+    display: flex;
+    width: 12rem;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+}
+.post__thumbnail img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+}
+.post__content {
+    display: block;
+    flex: 1;
+}
+</style>
+<body>
+    <main>
+    {% block content %}
+    {% endblock content %}
+    </main>
+    <script src="/static/main.js"></script>
+</body>
+</html>
